@@ -5,7 +5,7 @@
 import re, requests, sys, os;
 
 #Press ctrl+Fn+End to get past all the bad words.
-words="""
+words=r"""
 
 
 
@@ -56,6 +56,7 @@ words="""
 
 
 god
+gawd
 jesus
 christ
 lord
@@ -65,10 +66,12 @@ golly
 gosh
 heaven
 goodness
+\bgood grief\b
 sake
-oh my
-oh, my
+\boh?,? my\b!?
+\bmy word\b
 holy
+holy \w+!?
 cow
 devil
 deuce
@@ -138,7 +141,7 @@ murder
 kill
 sex
 intercourse
-bed
+\bbed\w*
 naked
 smoke
 cigar
@@ -154,6 +157,9 @@ patch
 nicotine
 hate
 brilliant
+blinking
+blooming
+flaming
 spirits
 magic
 witch
@@ -173,19 +179,98 @@ doof
 goof
 up yours
 coffee
-tea
+\btea\b
+\bteas\b
+\bice tea\b
+\biced tea\b
 sword
-ax
-axe
+\baxe?[s]\b
 gun
 rifle
 spear
 pistol
 mace
+gamble
+casino
+slot machines?
+\bbet\b
+\bbetted\b
+\bbetting\b
+\bbets\b
 weed
-war
+\bwar\w*
 military
-""".strip()
+zombie
+vampire
+penis
+vagina
+gonads
+\bnads\b
+\bballs\b
+clitoris
+testicle
+scrotum
+boob
+breasts
+\bovary\w*
+\bovaries\w*
+uterus
+PMS
+menstr
+\bperiod\b
+\bdie\b
+\bdies\b
+\bdied\b
+death
+plague
+disease
+scary
+fright
+Mary
+\bMary Jane\b
+horror
+horrif
+dread
+\blosers?\b
+\bwimps?\b
+frick
+\bfetch\b
+\bfetching\b
+\bhugs?\b
+\bhuggers?\b
+embrace
+suck
+punk
+\bshut up\b
+blinkin
+fall off
+shoot
+pete
+for the love
+son of a
+crud
+dios
+spell
+cast as spell
+hex
+dick
+blimey
+tarnation
+tarnal
+my lan
+gawd
+lawd
+genius
+negro
+darky
+spic
+spik
+black
+white
+red
+cracker
+torture
+""".strip().lower()
 
 
 
@@ -195,7 +280,7 @@ military
 
 
 
-goodwords="""
+goodwords=r"""
 love
 charity
 faith
@@ -386,7 +471,6 @@ free
 liberty
 life
 lovable
-
 """.strip()
 
 script=""
@@ -702,6 +786,7 @@ awkwardly
 changing
 compassion
 dangled
+dangling
 dehydrated
 dumbfounded
 encouraging
@@ -714,6 +799,98 @@ stripes
 tears
 waxy
 youngin
+webbed
+wary
+wariness
+warily
+upward
+upwardly
+grasshoppers
+grasshopper
+teardrop
+succumbs
+steamy
+skillful
+scraps
+ranging
+lounging
+haggard
+grogginess
+grimaced
+grimace
+flame
+flames
+emerging
+edging
+cowl
+circumstances
+assume
+assumes
+assuring
+assures
+bulging
+belonging
+encompassed
+gunk
+rummaging
+unimaginable
+teachings
+succumb
+prolonging
+impassible
+grudgingly
+grudging
+classroom
+classrooms
+classified
+dragging
+dodging
+associates
+acknowledging
+belongings
+assert
+assertion
+twine
+twitched
+scrap
+scrape
+thank you
+thank you.
+thank you!
+cucumber
+classics
+lodging
+buttercup
+tearful
+tearfully
+whatever
+warranted
+virginia
+upspringing
+untearful
+surpass
+surpassed
+reassuringly
+assumptions
+charging
+christmastime
+lodgings
+paycheck
+checkin
+christina
+georgina
+staging
+warms
+wardrobe
+singin
+sunglasses
+christopher
+classically
+quadratic
+ragweed
+teammates
+weevil
+hashtagging
 """.strip();
 
 
@@ -739,12 +916,16 @@ class LangCheck:
     def evaluate(self, words, script):
         script=script.lower();
         for x in words:
-            re.sub("\w*"+x+r"\w*", self.handle_expletive_regex, script);
+            if "*" in x or "?" in x or "." in x or "+" in x or "[" in x or "^" in x or "$" in x or "\\" in x:
+                re.sub(x, self.handle_expletive_regex, script);
+            else:
+                re.sub(r"\w*"+x+r"\w*", self.handle_expletive_regex, script);
         self.remove_irrelevant();
         tfl=[]; #temporary foul language list (unsorted)
         for k,v in self.results.items():
             tfl.append(k+" "+str(v));
         tfl.sort();
+        print("\033c");
         print("\n".join(tfl));
         return self.results;
 
